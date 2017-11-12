@@ -1,0 +1,4 @@
+1: Utilizar o algorítmo da cadeia máxima como limite para o algorítmo.
+
+2: Otimizar para folhas
+    Fazer uma chamada com a fola de header. Após isso retirar a folha do gráfico.
