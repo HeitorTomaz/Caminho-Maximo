@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CM.VO;
 
 namespace Caminho_Maximo1
 {
@@ -8,19 +9,19 @@ namespace Caminho_Maximo1
     {
        public static int MIN_VALUE = -999999;
     }
-    public class Node
-    {
-        public Dictionary<int, int?> near = new Dictionary<int, int?>();
-        public int id;
-        public int? value;
+    //public class Node
+    //{
+    //    public Dictionary<int, int?> near = new Dictionary<int, int?>();
+    //    public int id;
+    //    public int? value;
 
-        public int? pathValue;
-        public List<int> path  = new List<int>();
-    }
-    public class Graph
-    {
-        public List<Node> nodes = new List<Node>();
-    }
+    //    public int? pathValue;
+    //    public List<int> path  = new List<int>();
+    //}
+    //public class Graph
+    //{
+    //    public List<Node> nodes = new List<Node>();
+    //}
     class Program
     {
         static void Main(string[] args)
@@ -30,44 +31,44 @@ namespace Caminho_Maximo1
 
             Graph gr = new Graph();
 
-            prog.MakePair(ref gr, 1, 2, 3);
-            prog.MakePair(ref gr, 2, 3, 4);
-            prog.MakePair(ref gr, 2, 6, 2);
-            prog.MakePair(ref gr, 4, 6, 6);
-            prog.MakePair(ref gr, 5, 6, 5);
+            Util.MakePair(ref gr, 1, 2, 3);
+            Util.MakePair(ref gr, 2, 3, 4);
+            Util.MakePair(ref gr, 2, 6, 2);
+            Util.MakePair(ref gr, 4, 6, 6);
+            Util.MakePair(ref gr, 5, 6, 5);
 
             Console.WriteLine("Maximum length of cable = " + prog.LongestCable(gr));
             Console.ReadKey();
         }
 
-        public void MakePair(ref Graph gr, int a, int b, int? val)
-        {
+        //public void MakePair(ref Graph gr, int a, int b, int? val)
+        //{
 
-            if (gr.nodes.Select(x => x).Where(x => x.id == a).Count() == 0)
-            {
-                gr.nodes.Add(new Node() { id = a, value = 0, pathValue = 0 });
-            }
-            if (gr.nodes.Select(x => x).Where(x => x.id == b).Count() == 0)
-            {
-                gr.nodes.Add(new Node() { id = b , value = 0, pathValue = 0 });
-            }
+        //    if (gr.nodes.Select(x => x).Where(x => x.id == a).Count() == 0)
+        //    {
+        //        gr.nodes.Add(new Node() { id = a, value = 0, pathValue = 0 });
+        //    }
+        //    if (gr.nodes.Select(x => x).Where(x => x.id == b).Count() == 0)
+        //    {
+        //        gr.nodes.Add(new Node() { id = b , value = 0, pathValue = 0 });
+        //    }
 
-            if (a == b)
-            {
-                foreach (Node nd in gr.nodes)
-                    if (nd.id == a)
-                        nd.value = val;
-            }
-            else
-            {
-                foreach (Node nd in gr.nodes)
-                    if (nd.id == a)
-                        nd.near.Add(b, val);
-                    else if (nd.id == b)
-                        nd.near.Add(a, val);
-            }
+        //    if (a == b)
+        //    {
+        //        foreach (Node nd in gr.nodes)
+        //            if (nd.id == a)
+        //                nd.value = val;
+        //    }
+        //    else
+        //    {
+        //        foreach (Node nd in gr.nodes)
+        //            if (nd.id == a)
+        //                nd.near.Add(b, val);
+        //            else if (nd.id == b)
+        //                nd.near.Add(a, val);
+        //    }
 
-        }
+        //}
 
 
         public int? LongestCable(Graph gr)
