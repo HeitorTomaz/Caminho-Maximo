@@ -1,4 +1,13 @@
 1: Utilizar o algorítmo da cadeia máxima como limite para o algorítmo.
+    montar um grafo conexo onde cada vértice tem apenas suas 2 maiores arestas.
+    Assim garantimos um limite inferior.
+
 
 2: Otimizar para folhas
     Fazer uma chamada com a fola de header. Após isso retirar a folha do gráfico.
+
+3: Identificar se existe ciclo.
+    Se não existir rodar o caminho máximo em uma árvore.
+    Se existir, retirar a menor aresta dentre todos os ciclos. Identificar novamente.
+
+
