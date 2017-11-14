@@ -17,5 +17,10 @@
     Se existir, retirar a menor aresta dentre todos os ciclos. Identificar novamente.
     --Nodei que daria merda. A menor aresta ainda pode ser utilizada se a soma das outras arestas for menor que ela.
     --Caso menor aresta positiva ou não tenham outras 2 arestas negativas pode funcionar.
+    Posso verificar se existe ciclo que só é ligado em um ponto e substitui-lo por vértice
+    correspondente ao meior valor possível.
+    Posso verificar se existe ciclo ligado em apenas dois pontos e substitui-lo por um vértice correspondente ao
+    maior caminho interno, além de um vertice em cada extremidade correspondente ao maior valor possível dentro daquele ciclo.
+
 
 4: adicionar timer de execução.
