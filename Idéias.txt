@@ -5,9 +5,11 @@
 
 2: Otimizar para folhas
     Fazer uma chamada com a fola de header. Após isso retirar a folha do gráfico.
+    --Executei. Graph.Clean()
+
 
 3: Identificar se existe ciclo.
     Se não existir rodar o caminho máximo em uma árvore.
     Se existir, retirar a menor aresta dentre todos os ciclos. Identificar novamente.
-
-
+    --Nodei que daria merda. A menor aresta ainda pode ser utilizada se a soma das outras arestas for menor que ela.
+    --Caso menor aresta positiva ou não tenham outras 2 arestas negativas pode funcionar.
