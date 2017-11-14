@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CM.VO;
 
+
 namespace Caminho_Maximo1
 {
 
@@ -15,31 +16,38 @@ namespace Caminho_Maximo1
 
             Graph gr = new Graph();
 
-            Util.MakePair(ref gr, 1, 2, 3);
-            Util.MakePair(ref gr, 2, 3, 4);
-            Util.MakePair(ref gr, 2, 6, 2);
-            Util.MakePair(ref gr, 4, 6, 6);
-            Util.MakePair(ref gr, 5, 6, -25);
-            Util.MakePair(ref gr, 5, 7, 10);
-            Util.MakePair(ref gr, 7, 8, 4);
-            Util.MakePair(ref gr, 8, 9, -3);
-            Util.MakePair(ref gr, 9, 10, 13);
-            Util.MakePair(ref gr, 4, 11, 5);
+            //Util.MakePair(ref gr, 1, 2, 3);
+            //Util.MakePair(ref gr, 2, 3, 4);
+            //Util.MakePair(ref gr, 2, 6, 2);
+            //Util.MakePair(ref gr, 4, 6, 6);
+            //Util.MakePair(ref gr, 5, 6, -25);
+            //Util.MakePair(ref gr, 5, 7, 10);
+            //Util.MakePair(ref gr, 7, 8, 4);
+            //Util.MakePair(ref gr, 8, 9, -3);
+            //Util.MakePair(ref gr, 9, 10, 13);
+            //Util.MakePair(ref gr, 4, 11, 5);
+            List<string> csvs = Util.BuscaGrafos();
+            foreach ( string x in csvs)
+            {
+                Util.MontaGrafo(ref gr, x);
+                gr.Clean();
+                Console.WriteLine("Maximum length of " + x + " = " + prog.LongestCable(gr));
+            }
+            
 
-
-
-
-            gr.Clean();
-            Console.WriteLine("Maximum length of cable = " + prog.LongestCable(gr));
+            //gr.Clean();
+            //Console.WriteLine("Maximum length of cable = " + prog.LongestCable(gr));
             Console.ReadKey();
         }
         
-        public int? LongestCable(Graph gr)
+
+
+        public Double LongestCable(Graph gr)
         {
             // maximum length of cable among the connected
             // cities
-            int? max_len = global.MIN_VALUE;
-            int? curr_len = global.MIN_VALUE;
+            Double max_len = global.MIN_VALUE;
+            Double curr_len = global.MIN_VALUE;
             // call DFS for each city to find maximum
             // length of cable
             foreach (Node nd in gr.nodes)
@@ -63,14 +71,14 @@ namespace Caminho_Maximo1
 
 
         // src is starting node for DFS traversal
-        public int? DFS(Graph gr, Node src)
+        public Double DFS(Graph gr, Node src)
         {
 
             src.path.Add(src.id);
 
-            int? curr_len = src.pathValue + src.value;
-            int? Max_len = curr_len;
-            int? Node_len = global.MIN_VALUE;
+            Double curr_len = src.pathValue + src.value;
+            Double Max_len = curr_len;
+            Double Node_len = global.MIN_VALUE;
 
             // Traverse all adjacent
             foreach( int i in src.near.Keys)
@@ -86,8 +94,7 @@ namespace Caminho_Maximo1
                     adjacent.path = src.path;
                     adjacent.pathValue = curr_len + src.near[i];
                     // Call DFS for adjacent city
-                    Node_len = DFS(gr
-                                    , adjacent);
+                    Node_len = DFS(gr, adjacent);
 
                     Max_len = (Node_len > Max_len ? Node_len : Max_len);
                 }

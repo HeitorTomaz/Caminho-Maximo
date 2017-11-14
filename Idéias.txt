@@ -8,6 +8,8 @@
     --Melhorei, agora eu apenas removo a ligação entre o galho e o grafo e adiciono o "nó do galho" 
     --Assim, caso caminho máximo esteja dentro do galho eu não o perco.
     --Executei. Graph.Clean()
+    Admitir que os nós do galho estejam em contato com outras folhas.
+    Realimentar método até que não limpe mais nada.
 
 
 3: Identificar se existe ciclo.
@@ -15,3 +17,5 @@
     Se existir, retirar a menor aresta dentre todos os ciclos. Identificar novamente.
     --Nodei que daria merda. A menor aresta ainda pode ser utilizada se a soma das outras arestas for menor que ela.
     --Caso menor aresta positiva ou não tenham outras 2 arestas negativas pode funcionar.
+
+4: adicionar timer de execução.

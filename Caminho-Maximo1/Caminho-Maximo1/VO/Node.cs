@@ -6,11 +6,11 @@ namespace CM.VO
 {
     public class Node
     {
-        public Dictionary<int, int> near = new Dictionary<int, int>();
+        public Dictionary<int, Double> near = new Dictionary<int, Double>();
         public int id;
-        public int value;
+        public Double value;
 
-        public int? pathValue;
+        public Double pathValue;
         public List<int> path = new List<int>();
     }
 }

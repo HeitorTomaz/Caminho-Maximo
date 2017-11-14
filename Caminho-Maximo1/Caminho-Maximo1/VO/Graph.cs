@@ -31,7 +31,7 @@ namespace CM.VO
 
             foreach (int f in fol)
             {
-                int val = global.MIN_VALUE;
+                Double val = global.MIN_VALUE;
                 List<int> path = GalhoMaximo(f,ref val );
                 if (path.Count > 2)
                 {
@@ -93,13 +93,13 @@ namespace CM.VO
         {
             return this.nodes.Select(x => x).Where(x => x.near.Count == 0).Select(x => x.id).ToList();
         }
-        private List<int> GalhoMaximo(int first, ref int val)
+        private List<int> GalhoMaximo(int first, ref Double val)
         {
             Node nd, src;
             src = this.nodes.Select(x => x).Where(x => x.id == first).First();
             List<int> path = new List<int>();
-            int maxVal = global.MIN_VALUE;
-            int atualVal = global.MIN_VALUE;
+            Double maxVal = global.MIN_VALUE;
+            Double atualVal = global.MIN_VALUE;
             path.Add(src.id);
             nd = this.nodes.Select(x => x).Where(x => x.id == src.near.First().Key).First();
             path.Add(nd.id);
