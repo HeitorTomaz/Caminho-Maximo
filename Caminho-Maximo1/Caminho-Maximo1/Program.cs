@@ -19,12 +19,12 @@ namespace Caminho_Maximo1
             Util.MakePair(ref gr, 2, 3, 4);
             Util.MakePair(ref gr, 2, 6, 2);
             Util.MakePair(ref gr, 4, 6, 6);
-            Util.MakePair(ref gr, 5, 6, 5);
-            Util.MakePair(ref gr, 5, 7, 1);
+            Util.MakePair(ref gr, 5, 6, -25);
+            Util.MakePair(ref gr, 5, 7, 10);
             Util.MakePair(ref gr, 7, 8, 4);
             Util.MakePair(ref gr, 8, 9, -3);
-            Util.MakePair(ref gr, 9, 10, 4);
-            Util.MakePair(ref gr, 4, 11, 8);
+            Util.MakePair(ref gr, 9, 10, 13);
+            Util.MakePair(ref gr, 4, 11, 5);
 
 
 

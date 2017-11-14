@@ -37,10 +37,14 @@ namespace CM.VO
                 {
                     Node newND = new Node() { id = this.nodes.Max(x => x.id) + 1, value = 0 };
                     newND.near.Add(path.Last(), val);
+                    //Retirando a ligação entre o galho e o grafo
                     path.ForEach(x => this.nodes.Select(y => y).Where(y => y.id == path.Last()).First().near.Remove(x));
+                    this.nodes.Select(x => x).Where(x => x.id == path[path.Count - 2]).First().near.Remove(path.Last());
+
                     this.nodes.Select(x => x).Where(x => x.id == path.Last()).First().near.Add(newND.id, val);
-                    path.Remove(path.Last());
-                    path.ForEach(x => this.nodes.Remove(this.nodes.Select(y => y).Where(y => y.id == x).First()));
+
+                    //path.Remove(path.Last());
+                    //path.ForEach(x => this.nodes.Remove(this.nodes.Select(y => y).Where(y => y.id == x).First()));
                     this.nodes.Add(newND);
                 }
             }

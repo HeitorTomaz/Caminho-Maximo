@@ -5,6 +5,8 @@
 
 2: Otimizar para folhas
     Fazer uma chamada com a fola de header. Após isso retirar a folha do gráfico.
+    --Melhorei, agora eu apenas removo a ligação entre o galho e o grafo e adiciono o "nó do galho" 
+    --Assim, caso caminho máximo esteja dentro do galho eu não o perco.
     --Executei. Graph.Clean()
 
 
