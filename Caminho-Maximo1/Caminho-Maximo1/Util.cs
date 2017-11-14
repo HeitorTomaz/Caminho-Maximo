@@ -8,7 +8,7 @@ namespace Caminho_Maximo1
 {
     public class Util
     {
-        public static void MakePair(ref Graph gr, int a, int b, int? val)
+        public static void MakePair(ref Graph gr, int a, int b, int val)
         {
 
             if (gr.nodes.Select(x => x).Where(x => x.id == a).Count() == 0)
