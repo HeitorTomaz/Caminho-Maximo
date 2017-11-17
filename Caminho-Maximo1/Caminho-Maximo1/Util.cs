@@ -9,7 +9,7 @@ namespace Caminho_Maximo1
 {
     public class Util
     {
-        public static void MakePair(ref Graph gr, int a, int b, Double val)
+        public static void MakePair(ref Grafos gr, int a, int b, Double val)
         {
 
             if (gr.nodes.Select(x => x).Where(x => x.id == a).Count() == 0)
@@ -31,14 +31,32 @@ namespace Caminho_Maximo1
             {
                 foreach (Node nd in gr.nodes)
                     if (nd.id == a)
-                        nd.near.Add(b, val);
+                    {
+                        if (!nd.near.ContainsKey(b))
+                        {
+                            nd.near.Add(b, val);
+                        }
+                        else if (nd.near[b] < val)
+                        {
+                            nd.near[b] = val;
+                        }
+                    }
                     else if (nd.id == b)
-                        nd.near.Add(a, val);
+                    {
+                        if (!nd.near.ContainsKey(a))
+                        {
+                            nd.near.Add(a, val);
+                        }
+                        else if (nd.near[a] < val)
+                        {
+                            nd.near[a] = val;
+                        }
+                    }
             }
 
         }
 
-        public static void MontaGrafo(ref Graph gr, string path)
+        public static int MontaGrafo(ref Grafos gr, string path)
         {
             //Declaro o StreamReader para o caminho onde se encontra o arquivo
             StreamReader rd = new StreamReader(@"" + path);
@@ -47,10 +65,11 @@ namespace Caminho_Maximo1
             //Declaro um array do tipo string que será utilizado para adicionar o conteudo da linha separado
             string[] linhaseparada = null;
             //realizo o while para ler o conteudo da linha
-            int i = 0;
+            int arestas = 0, linhas =  0;
             while ((linha = rd.ReadLine()) != null)
             {
-                i++;
+                arestas++;
+                linhas++;
                 try
                 {
                     //com o split adiciono a string 'quebrada' dentro do array
@@ -60,39 +79,36 @@ namespace Caminho_Maximo1
                     Double val;
                     a = Convert.ToInt32(linhaseparada[0]);
                     b = Convert.ToInt32(linhaseparada[1]);
-                    val = Convert.ToDouble(linhaseparada[2]);
-
+                    //Console.WriteLine(linhaseparada[2]);
+                    if (linhaseparada[2].Length > 12)
+                    {
+                        string x = linhaseparada[2].Substring(0, 6);
+                        string y = linhaseparada[2].Substring(linhaseparada[2].Length - 5);
+                        linhaseparada[2] = x + y;
+                    }
+                    //Console.WriteLine(linhaseparada[2]);
+                    val = Convert.ToDouble( Double.Parse(linhaseparada[2], System.Globalization.NumberStyles.Any));
+                    //Console.WriteLine(val);
                     MakePair(ref gr, a, b, val);
 
                 }
-                catch
+                catch(Exception ex)
                 {
-                    Console.WriteLine("Linha " + i + " não lida.");
+                    
+                    Console.WriteLine("Linha " + linhas + " não lida. " + ex.InnerException + ex.Message);
                 }
             }
             rd.Close();
+            return arestas;
         }
+
         public static List<string> BuscaGrafos()
         {
             List<string> files;
             try
             {
                 files = Directory.EnumerateFiles(@"..\Grafos\", "*.csv", SearchOption.AllDirectories).ToList();
-                //from file in Directory.EnumerateFiles(@"..\Grafos\", "*.csv", SearchOption.AllDirectories)
-                //from line in File.ReadLines(file)
-                //where line.Contains("Microsoft")
-                //select new
-                //{
-                //    File = file,
-                //    //Line = line
-                //};
-
-
-                //foreach (var f in files)
-                //{
-                //    Console.WriteLine("{0}\t{1}", f.File, f.Line);
-                //}
-                //Console.WriteLine("{0} files found.", files.Count().ToString());
+                files.ForEach(x=> Console.WriteLine(x));
                 return files;
             }
             catch (UnauthorizedAccessException UAEx)
