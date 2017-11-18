@@ -55,6 +55,67 @@ namespace Caminho_Maximo1
         }
 
 
+        public Double LongestCableIncerto(Graph gr, int raiz = -1)
+        {
+            // maximum length of cable among the connected
+            // cities
+            Double max_len = global.MIN_VALUE;
+            Double curr_len = global.MIN_VALUE;
+            // call DFS for each city to find maximum
+            // length of cable
+
+            gr.nodes.Sort((x, y) => -1*Util.Arestas.Select(w => w).Where(w => w.A == x.id || w.B == x.id).Max(w => w.val).CompareTo(
+                                                    Util.Arestas.Select(w => w).Where(w => w.A == y.id || w.B == y.id).Max(w => w.val)));
+            List<int> caminho = new List<int>();
+            if (raiz == -1)
+            {
+                foreach (Node nd in gr.nodes)
+                {
+
+                    //Console.WriteLine("novo " + nd.id);
+                    // Call DFS for src vertex nd
+                    
+                    Node filho = new Node() { id = nd.id, value = Convert.ToDouble(nd.value), path = nd.path.ToList(), near = nd.near};
+                    //anda pra direita
+                    curr_len = DFSGuloso(gr, ref filho);
+
+                    foreach (Node no in gr.nodes)
+                    {
+                        no.path = caminho.ToList();
+                        no.pathValue = 0;
+                    }
+                    //anda pra esquerda
+                    filho.pathValue = 0;
+                    curr_len += DFSGuloso(gr, ref filho);
+
+                    max_len = (curr_len > max_len ? curr_len : max_len);
+                    //clean paths 
+                    foreach (Node no in gr.nodes)
+                    {
+                        no.path = caminho.ToList();
+                        no.pathValue = 0;
+                    }
+                    caminho.Add(nd.id);
+                }
+            }
+            else
+            {
+                Node nd = gr.nodes.Select(x => x).Where(x => x.id == raiz).First();
+                max_len = DFS(gr, nd);
+
+                //max_len = (curr_len > max_len ? curr_len : max_len);
+                //clean paths 
+                foreach (Node no in gr.nodes)
+                {
+                    no.path = new List<int>();
+                    no.pathValue = 0;
+                }
+
+            }
+
+            return max_len;
+        }
+
 
         // src is starting node for DFS traversal
         public Double DFS(Graph gr, Node src)
@@ -77,7 +138,7 @@ namespace Caminho_Maximo1
                     Node adjacent = gr.nodes.Select(x => x).Where(x => x.id == i).FirstOrDefault();
                     // Total length of cable from src city
                     // to its adjacent
-                    adjacent.path = src.path;
+                    adjacent.path = src.path.ToList();
                     adjacent.pathValue = curr_len + src.near[i];
                     // Call DFS for adjacent city
                     Node_len = DFS(gr, adjacent);
@@ -88,6 +149,79 @@ namespace Caminho_Maximo1
             }
             //Console.WriteLine("path id = "+ src.id );
             return Max_len;
+        }
+
+        // src is starting node for DFS traversal
+        public Double DFSGuloso(Graph gr, ref Node src)
+        {
+
+            src.path.Add(src.id);
+
+            Double curr_len_adj = src.pathValue + src.value;
+            Double Max_len_adj = curr_len_adj;
+            Double Node_len = curr_len_adj;
+
+            Double curr_len_adj2 = 0;
+            Double Max_len_adj2 = curr_len_adj2;
+
+            List<Node> nodes = new List<Node>();
+
+            Node prox;
+            Double proxValue;
+            // Traverse all adjacent
+            foreach (int i in src.near.Keys)
+            {
+                if (!src.path.Contains(i)) {
+                    Node filho = gr.nodes.Select(x => x).Where(x => x.id == i).First();
+                    filho.path = src.path.ToList();
+                    filho.pathValue = curr_len_adj + src.near[i] + filho.value;
+                    filho.pai = src.id;
+
+                    foreach (int j in filho.near.Keys)
+                    {
+                        if (!src.path.Contains(j))
+                        {
+                            Node Neto = gr.nodes.Select(x => x).Where(x => x.id == j).First();
+                            Neto.path = src.path.ToList();
+                            //Neto.path.Add(filho.id);
+                            Neto.pathValue = filho.pathValue + filho.near[j] + Neto.value;
+                            Neto.pai = filho.id;
+                            Neto.neto = true;
+                            nodes.Add(Neto);
+                        }
+                    }
+                    filho.neto = false;
+                    nodes.Add(filho);
+                }
+            }
+            if (src.near.Count > 0 && nodes.Count > 0)
+            {
+                proxValue = nodes.Select(x => x).Max(x => x.pathValue);
+                prox = nodes.Select(x => x).Where(x => x.pathValue == proxValue).First();
+
+                if (prox.neto)
+                    prox = nodes.Select(x => x).Where(x => x.id == prox.pai).First();
+
+                prox.path = src.path.ToList();
+                //anda para a direita da raiz
+                if (src.near.Count > 0)
+                    Node_len = DFSGuloso(gr, ref prox);
+
+            }
+            else
+            {
+                return Max_len_adj = (Node_len > Max_len_adj? Node_len: Max_len_adj);
+            }
+            //permite andar para a esquerda da raiz.
+
+            if (Node_len > Max_len_adj)
+            {
+                Max_len_adj = Node_len;
+                src.path = prox.path.ToList();
+                src.pathValue = prox.pathValue;
+            }
+
+            return Max_len_adj;
         }
 
     }
@@ -127,6 +261,9 @@ namespace Caminho_Maximo1
                     //path.Remove(path.Last());
                     //path.ForEach(x => this.nodes.Remove(this.nodes.Select(y => y).Where(y => y.id == x).First()));
                     this.nodes.Add(newND);
+                    Aresta ar = Util.Arestas.Select(x => x).Where(x => (x.A == newND.id && x.B == newND.near.Keys.First()) || (x.B == newND.id && x.B == newND.near.Keys.First())).First();
+                    Util.Arestas.Remove(ar);
+                    Util.Arestas.Add(new Aresta() { A = newND.id, B = newND.near.Keys.First(), val = newND.near[newND.near.Keys.First()] });
                 }
             }
         }

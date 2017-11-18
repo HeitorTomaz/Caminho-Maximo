@@ -41,7 +41,12 @@ namespace Caminho_Maximo1
                 Console.WriteLine("Início da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 gr.Clean();
                 Console.WriteLine("Fim da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                Console.WriteLine("Maximum length of " + x + " = " + prog.LongestCable(gr));
+
+                Console.WriteLine("Início do inexato: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                Console.WriteLine("Caminho máximo INEXATO " + x + " = " + prog.LongestCableIncerto(gr));
+                Console.WriteLine("Fim do inexato: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                Console.WriteLine("Início do exato: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                Console.WriteLine("Caminho máximo EXATO " + x + " = " + prog.LongestCable(gr));
                 Console.WriteLine("Fim da execução: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 Console.WriteLine();
             }

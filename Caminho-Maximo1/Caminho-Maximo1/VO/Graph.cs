@@ -20,5 +20,18 @@ namespace CM.VO
         }
 
     }
+    
+    public class Aresta
+    {
+        public int A;
+
+        public Double AVal = 0;
+
+        public int B;
+
+        public Double BVal = 0;
+
+        public Double val = 0;
+    }
 
 }

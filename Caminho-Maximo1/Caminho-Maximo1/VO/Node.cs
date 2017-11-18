@@ -12,5 +12,8 @@ namespace CM.VO
 
         public Double pathValue;
         public List<int> path = new List<int>();
+
+        public int pai;
+        public Boolean neto = false;
     }
 }
