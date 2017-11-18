@@ -29,7 +29,7 @@ namespace Caminho_Maximo1
             List<string> csvs = Util.BuscaGrafos();
             foreach ( string x in csvs)
             {
-                
+                gr = new Grafos();
                 Console.WriteLine("Iniciando " + x);
                 int arestas = Util.MontaGrafo(ref gr, x);
                 Console.WriteLine();
