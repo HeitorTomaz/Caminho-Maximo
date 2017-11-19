@@ -108,13 +108,15 @@ namespace Caminho_Maximo1
 
         public void Clean()
         {
+            bool limpou = false;
+            int limpeza = 0;
             List<int> fol = this.Folhas();
-
+            //transforma galho em folha
             foreach (int f in fol)
             {
                 Double val = global.MIN_VALUE;
                 List<int> path = GalhoMaximo(f, ref val);
-                if (path.Count > 2)
+                if (path.Count > 2 && this.nodes.Select(x => x).Where(x => x.id == path.Last()).First().near.Count > 1)
                 {
                     Node newND = new Node() { id = this.nodes.Max(x => x.id) + 1, value = 0 };
                     newND.near.Add(path.Last(), val);
@@ -127,8 +129,69 @@ namespace Caminho_Maximo1
                     //path.Remove(path.Last());
                     //path.ForEach(x => this.nodes.Remove(this.nodes.Select(y => y).Where(y => y.id == x).First()));
                     this.nodes.Add(newND);
+                    limpeza += path.Count - 2;
+                    limpou = true;
                 }
             }
+            fol.Clear();
+
+            //caso duas folhas no mesmo nó
+            fol = this.Folhas();
+            List<Node> NdFolList = new List<Node>();
+
+            fol.ForEach(x => NdFolList.Add(this.nodes.Select(y => y).Where(y => y.id == x).First()));
+            List<int> old = new List<int>();
+            foreach (Node NdFol in NdFolList.ToList())
+            {
+                if (NdFol.near.Count == 0) { continue; }
+                int pai = NdFol.near.Keys.First();
+//#if Debug
+                Console.WriteLine("Pai: " + pai);
+//#endif
+                if (!old.Contains(pai))
+                {
+                    old.Add(NdFol.near.Keys.First());
+
+                    List<Node> vizinhos = new List<Node>();
+                    vizinhos = NdFolList.Select(x => x).Where(x => x.near.Keys.Contains(pai)).ToList();
+                    Node paiND = this.nodes.Select(x => x).Where(x => x.id == pai).First();
+                    if (vizinhos.Count <= 1 || paiND.near.Count == vizinhos.Count) { continue; }
+
+                    vizinhos.ForEach(x => x.pathValue = x.near[pai] + x.value);
+                    Double max = vizinhos.Select(x => x).Max(x => x.pathValue);
+                    
+                    //removo as ligações das folhas aos pais
+                    vizinhos.ForEach(k =>
+                        this.nodes.Select(x => x)
+                            .Where(x => x.id == NdFol.near.Keys.First())
+                            .First().near.Remove(k.id)                       
+                        );
+                    vizinhos.ForEach(k =>
+                    this.nodes.Select(x => x).Where(x => x.id == k.id).First().near.Remove(pai)
+                    );
+                    //adiciono nova folha
+                    Node newND = new Node() { id = this.nodes.Max(x => x.id) + 1, value = 0 };
+                    newND.near.Add(pai, max);
+                    this.nodes.Select(x => x)
+                    .Where(x => x.id == pai)
+                    .First()
+                    .near.Add(newND.id, max);
+
+                    this.nodes.Add(newND);
+                    limpeza += vizinhos.Count - 1;
+                    limpou = true;
+                }
+            }
+            Console.WriteLine("Limpou: " + limpeza);
+            if (limpou) { this.Clean(); }
+            this.nodes.ForEach(x => x.pathValue = 0);
+
+            this.nodes
+                .Select(x => x)
+                .Where(x => x.value == 0 && x.near.Count == 0)
+                .ToList()
+                .ForEach(y => this.nodes.Remove(y));
+
         }
         #endregion
 
