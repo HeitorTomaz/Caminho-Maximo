@@ -24,7 +24,7 @@ namespace Caminho_Maximo1
                         Node nd = gr.nodes.Select(x => x).Where(x => x.id == i).First();
                         if (nd.near.Count > 1)
                         {
-                            nd.path = src.path;
+                            nd.path = src.path.ToList();
                             ammount.Concat(IsCiclic(gr, nd));
                         }
                     }

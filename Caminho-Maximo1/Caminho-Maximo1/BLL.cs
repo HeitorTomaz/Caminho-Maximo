@@ -77,7 +77,7 @@ namespace Caminho_Maximo1
                     Node adjacent = gr.nodes.Select(x => x).Where(x => x.id == i).FirstOrDefault();
                     // Total length of cable from src city
                     // to its adjacent
-                    adjacent.path = src.path;
+                    adjacent.path = src.path.ToList();
                     adjacent.pathValue = curr_len + src.near[i];
                     // Call DFS for adjacent city
                     Node_len = DFS(gr, adjacent);
@@ -119,7 +119,7 @@ namespace Caminho_Maximo1
                     Node newND = new Node() { id = this.nodes.Max(x => x.id) + 1, value = 0 };
                     newND.near.Add(path.Last(), val);
                     //Retirando a ligação entre o galho e o grafo
-                    path.ForEach(x => this.nodes.Select(y => y).Where(y => y.id == path.Last()).First().near.Remove(x));
+                    this.nodes.Select(x => x).Where(x => x.id == path.Last()).First().near.Remove(path[path.Count - 2]);
                     this.nodes.Select(x => x).Where(x => x.id == path[path.Count - 2]).First().near.Remove(path.Last());
 
                     this.nodes.Select(x => x).Where(x => x.id == path.Last()).First().near.Add(newND.id, val);
@@ -147,7 +147,7 @@ namespace Caminho_Maximo1
                         Node nd = gr.nodes.Select(x => x).Where(x => x.id == i).First();
                         if (nd.near.Count > 1)
                         {
-                            nd.path = src.path;
+                            nd.path = src.path.ToList();
                             ammount.Concat(IsCiclic(gr, nd));
                         }
                     }

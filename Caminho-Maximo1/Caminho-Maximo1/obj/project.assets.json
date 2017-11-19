@@ -673,11 +673,11 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "D:\\Sistemas\\Caminho-Maximo\\Caminho-Maximo1\\Caminho-Maximo1\\Caminho-Maximo1.csproj",
+      "projectUniqueName": "D:\\Sistemas\\Caminho-Maximo-Exato\\Caminho-Maximo1\\Caminho-Maximo1\\Caminho-Maximo1.csproj",
       "projectName": "Caminho-Maximo1",
-      "projectPath": "D:\\Sistemas\\Caminho-Maximo\\Caminho-Maximo1\\Caminho-Maximo1\\Caminho-Maximo1.csproj",
+      "projectPath": "D:\\Sistemas\\Caminho-Maximo-Exato\\Caminho-Maximo1\\Caminho-Maximo1\\Caminho-Maximo1.csproj",
       "packagesPath": "C:\\Users\\T-Gamer\\.nuget\\packages\\",
-      "outputPath": "D:\\Sistemas\\Caminho-Maximo\\Caminho-Maximo1\\Caminho-Maximo1\\obj\\",
+      "outputPath": "D:\\Sistemas\\Caminho-Maximo-Exato\\Caminho-Maximo1\\Caminho-Maximo1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
