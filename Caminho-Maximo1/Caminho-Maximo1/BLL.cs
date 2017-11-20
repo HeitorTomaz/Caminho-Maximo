@@ -110,9 +110,11 @@ namespace Caminho_Maximo1
         {
             bool limpou = false;
             int limpeza = 0;
-            List<int> fol = this.Folhas();
+            List<int> fol = new List<int>();
+#region  transforma galho em folha
+            fol = this.Folhas();
             Console.WriteLine("Folhas: " + fol.Count);
-            //transforma galho em folha
+
             foreach (int f in fol)
             {
                 Double val = global.MIN_VALUE;
@@ -135,8 +137,10 @@ namespace Caminho_Maximo1
                 }
             }
             fol.Clear();
+#endregion
 
-            //caso duas folhas no mesmo nó
+
+            #region  caso duas folhas no mesmo nó
             fol = this.Folhas();
             List<Node> NdFolList = new List<Node>();
 
@@ -183,7 +187,105 @@ namespace Caminho_Maximo1
                     limpou = true;
                 }
             }
+#endregion
             Console.WriteLine("Limpou: " + limpeza);
+
+#region Reduz caminhos
+            List<List<Node>> caminhos = Caminhos();
+
+            foreach (List<Node> caminho in caminhos)
+            {
+                List<int> caminhoInt = caminho.Select(x => x.id).ToList();
+                List<Node> pontas = caminho.Select(x => x).Where(x => x.ponta).ToList();
+                List<int> externos = new List<int>();
+
+
+                if (pontas.Count == 1)
+                {
+                    int vizinhoA = pontas.First().near.First().Key;
+                    this.nodes.Select(y => y).Where(y => y.id == vizinhoA).First().near.Remove(pontas.First().id);
+                    int vizinhoB = pontas.First().near.Last().Key;
+                    this.nodes.Select(y => y).Where(y => y.id == vizinhoB).First().near.Remove(pontas.First().id);
+                    caminho.Remove(pontas.First());
+                    Double maxA = CaminhoMaximo(caminho, this.nodes.Select(y => y).Where(y => y.id == vizinhoA).First());
+                    Double maxB = CaminhoMaximo(caminho, this.nodes.Select(y => y).Where(y => y.id == vizinhoB).First());
+
+                    Node newND = new Node() { id = this.nodes.Max(x => x.id) + 2, value = 0 };
+                    newND.near.Add(pontas.First().id, (maxA > maxB ? maxA : maxB));
+
+                    this.nodes.Select(x => x).Where(x => x.id == pontas.First().id).First().near.Clear();
+                    this.nodes.Select(x => x).Where(x => x.id == pontas.First().id).First().near.Add(newND.id, (maxA > maxB ? maxA : maxB));
+                    this.nodes.Add(newND);
+
+                    limpeza += 1;
+                    limpou = true;
+                    continue;
+                }
+                else if (pontas.Count > 1)
+                {
+
+                    Node newNDLigacao = CaminhoTotal(caminho);
+
+                    foreach (Node ponta in pontas)
+                    {
+                        Double max = CaminhoMaximo(caminho, ponta);
+
+                        int externo = ponta.near.Keys.Select(x => x).Where(x => !caminhoInt.Contains(x)).First();
+                        externos.Add(externo);
+                        Node newND = new Node() { id = this.nodes.Max(x => x.id) + 2, value = 0 };
+                        newND.near.Add(externo, max);
+                        //remove ligacao
+                        this.nodes.Select(y => y).Where(y => y.id == externo).First().near.Remove(ponta.id);
+                        this.nodes.Select(y => y).Where(y => y.id == ponta.id).First().near.Remove(externo);
+                        //adiciona node
+                        this.nodes.Select(x => x).Where(x => x.id == externo).First().near.Add(newND.id, max);
+                        this.nodes.Add(newND);
+
+                    }
+                    //adicionando a ligação
+
+                    newNDLigacao.near.Keys.ToList().ForEach(x => this.nodes.Select(y => y).Where(y => y.id == x).First().near.Add(newNDLigacao.id, newNDLigacao.near[x]));
+                    this.nodes.Add(newNDLigacao);
+
+                    limpeza += caminho.Count - 1;
+                    limpou = true;
+                }
+            }
+            #endregion
+
+
+#region corta nos que ligam mesmos pontos.
+
+            List<List<Node>> duplicatas = Duplicatas();
+
+            foreach (List<Node> par in duplicatas)
+            {
+                int A = par.First().near.Keys.First();
+                int B = par.First().near.Keys.Last();
+                int A_Max = DuplicataMaximaUnilateral(par, A);
+                int B_Max = DuplicataMaximaUnilateral(par, B);
+                int Max = DuplicataMaxima(par);
+                foreach (Node no in par)
+                {
+                    if (no.id != A_Max && no.id != Max)
+                    {
+                        //removo ligacao ao A
+                        this.nodes.Select(x => x).Where(x => x.id == no.id).First().near.Remove(A);
+                        this.nodes.Select(x => x).Where(x => x.id == A).First().near.Remove(no.id);
+                    }
+                    if (no.id != B_Max && no.id != Max)
+                    {
+                        //removo ligacao ao B
+                        this.nodes.Select(x => x).Where(x => x.id == no.id).First().near.Remove(B);
+                        this.nodes.Select(x => x).Where(x => x.id == B).First().near.Remove(no.id);
+                    }
+                }
+                limpeza += par.Count - 1;
+                limpou = true;
+            }
+
+#endregion
+
             if (limpou) { limpeza += this.Clean(); }
             this.nodes.ForEach(x => x.pathValue = 0);
 
@@ -193,7 +295,12 @@ namespace Caminho_Maximo1
                 .ToList()
                 .ForEach(y => this.nodes.Remove(y));
             return limpeza;
+
         }
+
+        public int QuantosCaminhos() { return this.Caminhos().Count; }
+
+
         #endregion
 
 
@@ -230,9 +337,184 @@ namespace Caminho_Maximo1
             return this.nodes.Select(x => x).Where(x => x.near.Count == 1).Select(x => x.id).ToList();
         }
 
-        private List<int> Soltos()
+        private Double CaminhoMaximo(List<Node> caminho, Node raiz)
         {
-            return this.nodes.Select(x => x).Where(x => x.near.Count == 0).Select(x => x.id).ToList();
+            Double maximo = raiz.value;
+            Double atual = maximo;
+            List<int> caminhoInt = caminho.Select(x => x.id).ToList();
+            List<int> old = new List<int>();
+            old.Add(raiz.id);
+            Node nd = raiz;
+            while (old.Count < caminho.Count )
+            {
+                int prox = nd.near.Keys.Select(x => x).Where(x => !old.Contains(x) && caminhoInt.Contains(x)).First();
+                if (prox == 0) { continue; }
+                atual += nd.near[(int)prox];
+                nd = caminho.Select(x => x).Where(x => x.id == prox).First();
+                atual += nd.value;
+                maximo = (atual > maximo ? atual : maximo);
+                old.Add(prox);
+            }
+            return maximo;
+        }
+
+        private int DuplicataMaximaUnilateral(List<Node> duplicata, int raiz)
+        {
+            Double maximo = global.MIN_VALUE;
+            Double atual = maximo;
+            int retorno = -1;
+            foreach(Node nd in duplicata)
+            {
+                atual = nd.near[raiz] + nd.value;
+                retorno = (atual > maximo ? nd.id : retorno);
+                maximo = (atual > maximo ? atual : maximo);
+            }
+            return retorno;
+        }
+    
+        private int DuplicataMaxima(List<Node> duplicata)
+        {
+            Double maximo = global.MIN_VALUE;
+            Double atual = maximo;
+            int retorno = -1;
+            foreach (Node nd in duplicata)
+            {
+                atual = nd.near.First().Value + nd.near.Last().Value + nd.value;
+                retorno = (atual > maximo ? nd.id : retorno);
+                maximo = (atual > maximo ? atual : maximo);
+            }
+            return retorno;
+        }
+
+        private Node CaminhoTotal(List<Node> caminho)
+        {
+            Node raiz = caminho.Select(x => x).Where(x => x.ponta).First();
+            Double maximo = raiz.value;
+            Double atual = maximo;
+            List<int> caminhoInt = caminho.Select(x => x.id).ToList();
+            List<int> old = new List<int>();
+            old.Add(raiz.id);
+            Node nd = raiz;
+            while (old.Count < caminho.Count)
+            {
+                int prox = nd.near.Keys.Select(x => x).Where(x => !old.Contains(x) && caminhoInt.Contains(x)).First();
+                atual += nd.near[prox];
+                nd = caminho.Select(x => x).Where(x => x.id == prox).First();
+                atual += nd.value;
+                old.Add(nd.id);
+                //maximo = (atual > maximo ? atual : maximo);
+            }
+            //adicionando os caminhos ate os vertices
+            Node retorno = new Node() { id = this.nodes.Select(x => x.id).Max(y => y) + 1 };
+            retorno.value = atual;
+            int externo = raiz.near.Keys.Select(x => x).Where(x => !caminhoInt.Contains(x)).First();
+            retorno.near.Add(externo, raiz.near[externo]);
+            externo = nd.near.Keys.Select(x => x).Where(x => !caminhoInt.Contains(x)).First();
+            retorno.near.Add(externo, nd.near[externo]);
+
+            return retorno;
+        }
+
+
+        private List<List<Node>> Caminhos()
+        {
+            Boolean mudou = true;
+            List<Node> Duplas = this.nodes.Select(x => x).Where(x => x.near.Count == 2).ToList();
+            List<int> old = new List<int>();
+
+            List<List<Node>> retorno = new List<List<Node>>();
+            foreach (Node no in Duplas)
+            {
+                List<Node> caminho = new List<Node>();
+                List<int> caminhoInt = new List<int>();
+                mudou = true;
+                if (old.Contains(no.id)) { continue; }
+                old.Add(no.id);
+                caminho.Add(no);
+                caminhoInt.Add(no.id);
+                while (mudou)
+                {
+                    List<int> pontas = new List<int>();
+                    foreach (Node elementoCaminho in caminho)
+                    {
+                        if (!caminhoInt.Contains(elementoCaminho.near.Keys.ToList()[0])) { pontas.Add(elementoCaminho.id); }
+
+                        else if (!caminhoInt.Contains(elementoCaminho.near.Keys.ToList()[1])) { pontas.Add(elementoCaminho.id); }
+                    }
+                    
+                    mudou = false;
+                    foreach (int pont in pontas)
+                    {
+                        List<Node> vizinhos = Duplas.Select(x => x)
+                                                    .Where(x => x.near.Keys.Contains(pont) && !old.Contains(x.id))
+                                                    .ToList();
+                        if (vizinhos.Count == 0) { continue; }
+                        mudou = true;
+
+                        vizinhos.ForEach(x => caminho.Add(x));
+                        vizinhos.ForEach(x => old.Add(x.id));
+                        vizinhos.ForEach(x => caminhoInt.Add(x.id));
+                    }
+
+                    
+                    if (!mudou && caminho.Count > 1)
+                    {
+                        caminho.ForEach(x => x.ponta = false);
+                        foreach (int pont in pontas)
+                        {
+                            caminho.Select(x => x).Where(x => x.id == pont).First().ponta = true;
+                        }
+                    }
+                    if (!mudou && pontas.Count == 0 && caminho.Last().near.Keys.ToList().Contains(caminho.First().id))
+                    {
+                        caminho.ForEach(x => x.ponta = false);
+                        caminho.First().ponta = true;
+                    }
+                }
+                List<Node> pontas2 = new List<Node>();
+                pontas2 = caminho.Select(x => x).Where(x => x.ponta).ToList();
+                foreach (Node ponta in pontas2)
+                {
+                    Node nd = this.nodes.Select(x => x).Where(x => x.near.Keys.Contains(ponta.id)).First();
+                    if (nd.near.Count == 1)
+                    {
+                        caminho.Clear();
+                    }
+                }
+                if(caminho.Count > 1)
+                    retorno.Add(caminho);
+            }
+
+            return retorno;
+        }
+
+        private List<List<Node>> Duplicatas()
+        {
+            List<Node> Duplas = this.nodes.Select(x => x).Where(x => x.near.Count == 2).ToList();
+            List<List<Node>> retorno = new List<List<Node>>();
+            List<int> old = new List<int>();
+            foreach (Node no in Duplas)
+            {
+                if (old.Contains(no.id)) { continue; }
+                List<Node> Pares = new List<Node>();
+                Pares = Duplas.Select(x => x).Where(x => no.near.Keys.Contains(x.near.Keys.First()) && no.near.Keys.Contains(x.near.Keys.Last())).ToList();
+                Pares.ForEach(x => old.Add(x.id));
+
+                if (Pares.Count > 1)
+                    retorno.Add(Pares);
+            }
+
+            return retorno;
+
+        }
+
+
+
+
+
+        private List<Node> Soltos()
+        {
+            return this.nodes.Select(x => x).Where(x => x.near.Count == 0).ToList();
         }
 
         private List<int> GalhoMaximo(int first, ref Double val)

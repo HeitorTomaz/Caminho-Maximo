@@ -41,6 +41,7 @@ namespace Caminho_Maximo1
                 Console.WriteLine("Início da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 int limpou = gr.Clean();
                 Console.WriteLine("Limpados: " + limpou + "\nSobraram: " + (vertices - limpou));
+                Console.WriteLine("Caminhos: " + gr.QuantosCaminhos());
                 Console.WriteLine("Fim da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 Console.WriteLine("Maximum length of " + x + " = " + prog.LongestCable(gr));
                 Console.WriteLine("Fim da execução: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
