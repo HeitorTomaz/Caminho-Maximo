@@ -111,9 +111,11 @@ namespace Caminho_Maximo1
             bool limpou = false;
             int limpeza = 0;
             List<int> fol = new List<int>();
-#region  transforma galho em folha
+
+
+            #region  transforma galho em folha
             fol = this.Folhas();
-            Console.WriteLine("Folhas: " + fol.Count);
+            //Console.WriteLine("Folhas: " + fol.Count);
 
             foreach (int f in fol)
             {
@@ -160,7 +162,7 @@ namespace Caminho_Maximo1
                     List<Node> vizinhos = new List<Node>();
                     vizinhos = NdFolList.Select(x => x).Where(x => x.near.Keys.Contains(pai)).ToList();
                     Node paiND = this.nodes.Select(x => x).Where(x => x.id == pai).First();
-                    if (vizinhos.Count <= 1 || paiND.near.Count == vizinhos.Count) { continue; }
+                    if (vizinhos.Count <= 1 || paiND.near.Count == vizinhos.Count || paiND.near.Count == 0) { continue; }
 
                     vizinhos.ForEach(x => x.pathValue = x.near[pai] + x.value);
                     Double max = vizinhos.Select(x => x).Max(x => x.pathValue);
@@ -175,7 +177,7 @@ namespace Caminho_Maximo1
                     //removo as ligações das folhas aos pais
                     vizinhos.ForEach(k =>
                         this.nodes.Select(x => x)
-                            .Where(x => x.id == NdFol.near.Keys.First())
+                            .Where(x => x.id == paiND.id)
                             .First().near.Remove(k.id)                       
                         );
                     vizinhos.ForEach(k => k.near.Remove(pai) );
@@ -198,7 +200,7 @@ namespace Caminho_Maximo1
                 }
             }
 #endregion
-            Console.WriteLine("Limpou: " + limpeza);
+            //Console.WriteLine("Limpou: " + limpeza);
 
 #region Reduz caminhos
             List<List<Node>> caminhos = Caminhos();
@@ -291,12 +293,15 @@ namespace Caminho_Maximo1
             #endregion
 
 
-#region corta nos que ligam mesmos pontos.
+            #region corta nos que ligam mesmos pontos.
+
 
             List<List<Node>> duplicatas = Duplicatas();
 
             foreach (List<Node> par in duplicatas)
             {
+                if (par.First().near.Count == 0 || par.First().near.Count == 0) {continue; }
+                    
                 int A = par.First().near.Keys.First();
                 int B = par.First().near.Keys.Last();
                 int A_Max = DuplicataMaximaUnilateral(par, A);
@@ -516,8 +521,12 @@ namespace Caminho_Maximo1
                 pontas2 = caminho.Select(x => x).Where(x => x.ponta).ToList();
                 foreach (Node ponta in pontas2)
                 {
-                    Node nd = this.nodes.Select(x => x).Where(x => x.near.Keys.Contains(ponta.id) && !caminho.Select(k=>k.id).ToList().Contains(x.id)).First();
-                    if (nd.near.Count == 1)
+                    List<Node> nd = this.nodes.Select(x => x).Where(x => x.near.Keys.Contains(ponta.id) && !caminho.Select(k=>k.id).ToList().Contains(x.id)).ToList();
+                    if (nd.Count == 0)
+                    {
+                        caminho.Clear();
+                    }
+                    else if (nd.First().near.Count <= 1)
                     {
                         caminho.Clear();
                     }
