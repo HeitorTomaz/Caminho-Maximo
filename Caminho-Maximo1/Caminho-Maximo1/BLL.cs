@@ -209,26 +209,44 @@ namespace Caminho_Maximo1
                 List<Node> pontas = caminho.Select(x => x).Where(x => x.ponta).ToList();
                 List<int> externos = new List<int>();
 
-
-                if (pontas.Count == 1)
+                pontas.ForEach(k => externos.Add( k.near.Keys.Select(x=>x).Where(y => !caminhoInt.Contains(y)).First() ));
+                externos = externos.Distinct().ToList();
+                //trata ciclos
+                if (externos.Count == 1)
                 {
-                    int vizinhoA = pontas.First().near.First().Key;
-                    this.nodes.Select(y => y).Where(y => y.id == vizinhoA).First().near.Remove(pontas.First().id);
-                    int vizinhoB = pontas.First().near.Last().Key;
-                    this.nodes.Select(y => y).Where(y => y.id == vizinhoB).First().near.Remove(pontas.First().id);
-                    caminho.Remove(pontas.First());
-                    Double maxA = CaminhoMaximo(caminho, this.nodes.Select(y => y).Where(y => y.id == vizinhoA).First());
-                    Double maxB = CaminhoMaximo(caminho, this.nodes.Select(y => y).Where(y => y.id == vizinhoB).First());
+                    Dictionary<int, Double> valores = new Dictionary<int, double>();
+                    int vizinho = pontas.First().near.Keys.ToList().Select(x=>x).Where(x=>!caminhoInt.Contains(x)).First();
+                    Node vizin = new Node();
+                    vizin = this.nodes.Select(y => y).Where(y => y.id == vizinho).First();
 
-                    Node newND = new Node() { id = this.nodes.Max(x => x.id) + 2, value = 0 };
-                    newND.near.Add(pontas.First().id, (maxA > maxB ? maxA : maxB));
+                    vizin.near.Remove(pontas.First().id);
+                    //int vizinhoB = pontas.First().near.Last().Key;
+                    vizin.near.Remove(pontas.Last().id);
 
-                    this.nodes.Select(x => x).Where(x => x.id == pontas.First().id).First().near.Clear();
+                    //caminho.Remove(pontas.First());
+                    Double maxA = CaminhoMaximo(caminho, pontas.First());
+                    Double maxB = CaminhoMaximo(caminho, pontas.Last());
+                    valores.Add(pontas.First().id, pontas.First().near[vizinho]);
+                    valores.Add(pontas.Last().id, pontas.Last().near[vizinho]);
 
-                    int vizinho = ((maxA > maxB ? vizinhoA : vizinhoB));
-                    this.nodes.Select(x => x).Where(x => x.id == vizinho).First().near.Remove(pontas.First().id);
+                    pontas.First().near.Remove(vizinho);
+                    pontas.Last().near.Remove(vizinho);
 
-                    this.nodes.Select(x => x).Where(x => x.id == pontas.First().id).First().near.Add(newND.id, (maxA > maxB ? maxA : maxB));
+                    //adiciona um nd ao grafo
+                    Node newND = new Node() { id = this.nodes.Max(x => x.id) + 1, value = 0 };
+                    newND.near.Add(vizinho, (maxA > maxB ? maxA : maxB));
+                    
+                    //this.nodes.Select(x => x).Where(x => x.id == pontas.First().id).First().near.Clear();
+                    
+                    this.nodes.Select(x => x).Where(x => x.id == vizinho).First().near.Add(newND.id, (maxA > maxB ? maxA : maxB));
+                    this.nodes.Add(newND);
+
+
+                    //refaz o ciclo
+                    newND = new Node() { id = this.nodes.Max(x => x.id) + 1, value = 0 };
+                    newND.near = valores;
+                    this.nodes.Select(x => x).Where(x => x.id == pontas.First().id).First().near.Add(newND.id, valores[pontas.First().id]);
+                    this.nodes.Select(x => x).Where(x => x.id == pontas.Last().id).First().near.Add(newND.id, valores[pontas.Last().id]);
                     this.nodes.Add(newND);
 
                     limpeza += 1;
@@ -237,7 +255,7 @@ namespace Caminho_Maximo1
                 }
                 else if (pontas.Count > 1)
                 {
-
+                    //trata caminho comum
                     Double total = CaminhoTotal(caminho);
                     Dictionary<int,Double> max = new Dictionary<int, double>();
 
@@ -364,7 +382,8 @@ namespace Caminho_Maximo1
             List<int> old = new List<int>();
             old.Add(raiz.id);
             Node nd = raiz;
-            atual += raiz.near[raiz.near.Keys.Select(x => x).Where(x => !caminhoInt.Contains(x)).First()];
+            if (raiz.near.Keys.Select(x => x).Where(x => !caminhoInt.Contains(x)).ToList().Count > 0)
+                atual += raiz.near[raiz.near.Keys.Select(x => x).Where(x => !caminhoInt.Contains(x)).First()];
             while (old.Count < caminho.Count )
             {
                 int prox = nd.near.Keys.Select(x => x).Where(x => !old.Contains(x) && caminhoInt.Contains(x)).First();
