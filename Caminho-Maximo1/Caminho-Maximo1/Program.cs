@@ -33,13 +33,14 @@ namespace Caminho_Maximo1
                 Console.WriteLine("Iniciando " + x);
                 int arestas = Util.MontaGrafo(ref gr, x);
                 Console.WriteLine();
-                
-                
-                Console.WriteLine(gr.nodes.Count + " Vértices");
+
+                int vertices = gr.nodes.Count;
+                Console.WriteLine(vertices + " Vértices");
                 Console.WriteLine(arestas + " Arestas");
 
                 Console.WriteLine("Início da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                gr.Clean();
+                int limpou = gr.Clean();
+                Console.WriteLine("Limpados: " + limpou + "\nSobraram: " + (vertices - limpou));
                 Console.WriteLine("Fim da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 Console.WriteLine("Maximum length of " + x + " = " + prog.LongestCable(gr));
                 Console.WriteLine("Fim da execução: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));

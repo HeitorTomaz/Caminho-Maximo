@@ -106,11 +106,12 @@ namespace Caminho_Maximo1
             return ammount;
         }
 
-        public void Clean()
+        public int Clean()
         {
             bool limpou = false;
             int limpeza = 0;
             List<int> fol = this.Folhas();
+            Console.WriteLine("Folhas: " + fol.Count);
             //transforma galho em folha
             foreach (int f in fol)
             {
@@ -146,7 +147,7 @@ namespace Caminho_Maximo1
                 if (NdFol.near.Count == 0) { continue; }
                 int pai = NdFol.near.Keys.First();
 //#if Debug
-                Console.WriteLine("Pai: " + pai);
+                //Console.WriteLine("Pai: " + pai);
 //#endif
                 if (!old.Contains(pai))
                 {
@@ -183,7 +184,7 @@ namespace Caminho_Maximo1
                 }
             }
             Console.WriteLine("Limpou: " + limpeza);
-            if (limpou) { this.Clean(); }
+            if (limpou) { limpeza += this.Clean(); }
             this.nodes.ForEach(x => x.pathValue = 0);
 
             this.nodes
@@ -191,7 +192,7 @@ namespace Caminho_Maximo1
                 .Where(x => x.value == 0 && x.near.Count == 0)
                 .ToList()
                 .ForEach(y => this.nodes.Remove(y));
-
+            return limpeza;
         }
         #endregion
 
@@ -246,7 +247,7 @@ namespace Caminho_Maximo1
             path.Add(nd.id);
             while (nd.near.Count == 2)
             {
-                nd = this.nodes.Select(x => x).Where(x => x.id == nd.near.First().Key).First();
+                nd = this.nodes.Select(x => x).Where(x => !path.Contains(x.id) && nd.near.Keys.Contains(x.id)).First();
                 path.Add(nd.id);
             }
 
