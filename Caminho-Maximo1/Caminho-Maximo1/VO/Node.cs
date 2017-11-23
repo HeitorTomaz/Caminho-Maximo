@@ -12,6 +12,7 @@ namespace CM.VO
 
         public Double pathValue;
         public List<int> path = new List<int>();
+        public Boolean ponta = false;
 
         public int pai;
         public Boolean neto = false;
