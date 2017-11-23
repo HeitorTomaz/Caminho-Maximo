@@ -31,13 +31,21 @@ namespace Caminho_Maximo1
                 Console.WriteLine(vertices + " Vértices");
                 Console.WriteLine(arestas + " Arestas");
 
-                Console.WriteLine("Início da execução simples: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+                Console.WriteLine("Início da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 sw.Start();
-                Console.WriteLine("Caminho máximo: " + x + " = " + prog.LongestCable(gr));
+                int limpou = gr.Clean();
+                sw.Stop();
+                TimeSpan tempo = sw.Elapsed;
+                Console.WriteLine("Fim da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                Console.WriteLine("Início da execução Heurística: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                sw.Start();
+                Console.WriteLine("Caminho máximo: " + x + " = " + prog.LongestCableIncerto(gr));
                 sw.Stop();
                 Console.WriteLine("Fim da execução: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-                TimeSpan tempo = sw.Elapsed;
-                Console.WriteLine("Tempo de execução: " + tempo.ToString());
+                TimeSpan tempo2 = sw.Elapsed;
+                Console.WriteLine("Tempo de execução Limpeza: " + tempo.ToString());
+                Console.WriteLine("Tempo de execução: " + tempo2.ToString());
                 Console.WriteLine();
 
                 sw = new Stopwatch();
@@ -49,7 +57,7 @@ namespace Caminho_Maximo1
 
                 Console.WriteLine("Início da limpeza: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
                 sw.Start();
-                int limpou = gr.Clean();
+                limpou = gr.Clean();
                 sw.Stop();
                 tempo = sw.Elapsed;
 
@@ -62,7 +70,7 @@ namespace Caminho_Maximo1
                 sw.Stop();
 
                 Console.WriteLine("Fim da execução: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-                TimeSpan tempo2 = sw.Elapsed;
+                tempo2 = sw.Elapsed;
                 Console.WriteLine("Tempo de execução Limpeza: " + tempo.ToString());
                 Console.WriteLine("Tempo de execução Total: " + tempo2.ToString());
 

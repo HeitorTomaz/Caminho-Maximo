@@ -13,5 +13,14 @@ namespace CM.VO
         public Double pathValue;
         public List<int> path = new List<int>();
         public Boolean ponta = false;
+
+        public int pai;
+        public Boolean neto = false;
+    }
+
+    public class Caminho
+    {
+        public List<int> id = new List<int>();
+        public Double val;
     }
 }

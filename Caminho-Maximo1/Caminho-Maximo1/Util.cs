@@ -7,8 +7,10 @@ using System.IO;
 
 namespace Caminho_Maximo1
 {
-    public class Util
+    public static class Util
     {
+
+
         public static void MakePair(ref Grafos gr, int a, int b, Double val)
         {
 
@@ -52,6 +54,7 @@ namespace Caminho_Maximo1
                             nd.near[a] = val;
                         }
                     }
+                //Arestas.Add(new Aresta() { A = a, B = b, val = val});
             }
 
         }
