@@ -28,7 +28,10 @@ namespace Caminho_Maximo1
                                                                      .CompareTo(gr.Arestas.Where(w => w.A == y || w.B == y).Max(w => w.val))));
             gr.subciclos.Sort((x, y) => x.nodes.Count.CompareTo(y.nodes.Count));
 
-            max_len = gr.nodes.Select(x => x.value).Max(); //limite inferior
+
+            Graph gr2 = new Graph(gr);
+
+            max_len = LongestCableIncerto(gr2); //limite inferior
 
             //subciclo.maximo = limite superior do subciclo
 
@@ -83,7 +86,7 @@ namespace Caminho_Maximo1
             Double max_len = global.MIN_VALUE;
             Double curr_len = global.MIN_VALUE;
             Graph gr = new Graph(grOriginal);
-
+            List<Caminho> caminhos = new List<Caminho>();
             // call DFS for each city to find maximum
             // length of cable
 
@@ -116,6 +119,9 @@ namespace Caminho_Maximo1
                         Node filho = new Node() { id = nd.id, value = Convert.ToDouble(nd.value), path = nd.path.ToList(), near = nd.near };
                         //anda pra direita
                         curr_len = DFSGuloso(gr, ref filho);
+                        Caminho caminhoAtual = new Caminho();
+                        caminhoAtual.id.Add(filho.id); //adiciono o cara
+                        caminhoAtual.id.Add(filho.path.Last()); //adiciono a ponta
 
                         foreach (Node n in gr.nodes)
                         {
@@ -129,13 +135,15 @@ namespace Caminho_Maximo1
                         //como chamo 2x conta o valor do filho 2x
                         curr_len -= filho.value;
 
-                        max_len = (curr_len > max_len ? curr_len : max_len);
-                        //clean paths 
-                        if (max_len ==659)
+                        if (curr_len > max_len)
                         {
-                            Console.WriteLine("\n\n\n\nSTOP\n\n\n");
-                            Console.ReadKey();
+                            max_len = curr_len;
+                            caminhoAtual.id.Add(filho.path.Last());
+                            caminhoAtual.id = caminhoAtual.id.Distinct().ToList();
+                            caminhoAtual.val = curr_len;
+                            caminhos.Add(caminhoAtual);
                         }
+                         
 
                         caminho.Add(nd.id);
 
@@ -162,6 +170,74 @@ namespace Caminho_Maximo1
                     no.path = new List<int>();
                     no.pathValue = 0;
                 }
+            }
+
+            Boolean mudou = true;
+            while (mudou)
+            {
+                mudou = false;
+                caminhos = caminhos.Distinct().ToList();
+                caminhos = caminhos.OrderByDescending(x => x.val).ToList().GetRange(0, (caminhos.Count > 10? 10 : caminhos.Count));
+
+                //criando cópia para não dar pau.
+                List<Caminho> caminhos2 = caminhos.ToList();
+                foreach (Caminho cam in caminhos2)
+                {
+
+                    foreach (int no in cam.id)
+                    {
+                        Node nd = gr.nodes.Where(x => x.id == no).First();
+
+                        //Console.WriteLine("novo " + nd.id);
+                        // Call DFS for src vertex nd
+                        foreach (Node n in gr.nodes)
+                        {
+                            n.path = new List<int>();
+                            n.pathValue = 0;
+                        }
+
+                        Node filho = new Node() { id = nd.id, value = Convert.ToDouble(nd.value), path = nd.path.ToList(), near = nd.near };
+                        //anda pra direita
+                        curr_len = DFSGuloso(gr, ref filho);
+                        Caminho caminhoAtual = new Caminho();
+                        caminhoAtual.id.Add(filho.id); //adiciono o cara
+                        caminhoAtual.id.Add(filho.path.Last()); //adiciono a ponta
+
+                        foreach (Node n in gr.nodes)
+                        {
+                            n.path = new List<int>();
+                            n.pathValue = 0;
+                        }
+                        //anda pra esquerda
+                        filho.pathValue = 0;
+                        curr_len += DFSGuloso(gr, ref filho);
+
+                        //como chamo 2x conta o valor do filho 2x
+                        curr_len -= filho.value;
+
+                        //somente fico com solucoes de tamanho diferente.
+                        if (curr_len > caminhos[ (caminhos.Count-1 > 10 ? 10 : caminhos.Count-1) ].val && !caminhos.Select(x=>x.val).Contains(curr_len))
+                        {
+                            max_len = (curr_len>max_len? curr_len: max_len);
+                            caminhoAtual.id.Add(filho.path.Last());
+                            caminhoAtual.id = caminhoAtual.id.Distinct().ToList();
+                            caminhoAtual.val = curr_len;
+                            caminhos.Add(caminhoAtual);
+                            mudou = true;
+                        }
+
+
+                        caminho.Add(nd.id);
+
+
+
+
+                        //if (max_len >= sub.maximo) { break; }
+                    }
+                }
+
+
+
 
             }
 

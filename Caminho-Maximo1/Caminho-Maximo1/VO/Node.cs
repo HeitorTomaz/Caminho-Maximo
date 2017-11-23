@@ -18,8 +18,9 @@ namespace CM.VO
         public Boolean neto = false;
     }
 
-    public class PontasNode
+    public class Caminho
     {
         public List<int> id = new List<int>();
+        public Double val;
     }
 }
