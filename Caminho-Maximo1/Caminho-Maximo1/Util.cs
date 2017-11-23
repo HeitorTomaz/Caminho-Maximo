@@ -10,7 +10,6 @@ namespace Caminho_Maximo1
     public static class Util
     {
 
-        public static List<Aresta> Arestas = new List<Aresta>();
 
         public static void MakePair(ref Grafos gr, int a, int b, Double val)
         {
@@ -55,7 +54,7 @@ namespace Caminho_Maximo1
                             nd.near[a] = val;
                         }
                     }
-                Arestas.Add(new Aresta() { A = a, B = b, val = val});
+                //Arestas.Add(new Aresta() { A = a, B = b, val = val});
             }
 
         }

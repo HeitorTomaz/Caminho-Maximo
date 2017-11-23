@@ -17,4 +17,9 @@ namespace CM.VO
         public int pai;
         public Boolean neto = false;
     }
+
+    public class PontasNode
+    {
+        public List<int> id = new List<int>();
+    }
 }
